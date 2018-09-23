@@ -4,6 +4,12 @@ cc_library(
         "centroid_tree.h"
     ],
     srcs = [
+        "node.h",
+        "node.c",
+        "node_list.h",
+        "node_list.c",
+        "centroid_tree_internal.h",
+        "centroid_tree_internal.c",
         "centroid_tree.c",
     ],
 )

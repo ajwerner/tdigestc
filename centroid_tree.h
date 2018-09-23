@@ -1,3 +1,5 @@
+#pragma once
+
 ////////////////////////////////////////////////////////////////////////////////
 // Centroid Tree
 //
@@ -35,7 +37,7 @@
 // Types
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct ct_internal_t *ct_tree_t;
+typedef struct ct_tree ct_tree_t;
 
 typedef struct  {
   double val;
@@ -64,17 +66,16 @@ ct_tree_t *ct_init(char buf[], size_t buf_size);
 
 // Mutations
 
-// ct_add adds a centroid to the tree and returns a boolean true to
-// indicate 
+// ct_add adds a centroid to the tree 
 ct_centroid_t *ct_create(ct_tree_t *t, ct_centroid_t new);
 
 // ct_update will update the value of the current centroid in the tree
 // TODO: what if cur not in t? add a bool?
-void ct_update(ct_centroid_t *cur, ct_centroid_t new);
+void ct_update(ct_tree_t *t, ct_centroid_t *cur, ct_centroid_t new);
 
 // ct_delete will delete to_delete from t
 // TODO: what if to_delete not in t? add a bool?
-void ct_delete(ct_centroid_t *to_delete);
+void ct_delete(ct_tree_t *t, ct_centroid_t *to_delete);
 
 // Queries
 // NOTE: queries inputs are only valid between mutations of the tree.
@@ -90,6 +91,6 @@ ct_centroid_t *ct_ceil(ct_tree_t *t, double val);
 ct_centroid_t *ct_sum_floor(ct_tree_t *t, double sum);
 ct_centroid_t *ct_sum_ceil(ct_tree_t *t, double sum);
 
+int ct_len(ct_tree_t *t);
+
 bool ct_is_bst(ct_tree_t *t);
-int ct_len(ct_tree_t *);
-void dump_tree(ct_tree_t);

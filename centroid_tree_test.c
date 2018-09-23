@@ -17,6 +17,7 @@ typedef enum {
   SUM_FLOOR,
   SUM_CEIL,
   NEXT,
+  PREV,
   MIN,
   MAX,
   LEN,
@@ -31,7 +32,6 @@ typedef struct {
 } test_op_t;
 
 static char *assert_eq(ct_centroid_t expected, ct_centroid_t got) {
-  printf("\nhi\n\n");
   mu_assert("values match", expected.val == got.val);
   mu_assert("counts match", expected.count == got.count);
   return NULL;
@@ -47,6 +47,14 @@ static test_op_t min_is(ct_centroid_t v) {
 
 static test_op_t max_is(ct_centroid_t v) {
   return (test_op_t) { MAX, 0, true, v };
+}
+
+static test_op_t next_is(ct_centroid_t v) {
+  return (test_op_t) { NEXT, 0, true, v };
+}
+
+static test_op_t prev_is(ct_centroid_t v) {
+  return (test_op_t) { PREV, 0, true, v };
 }
 
 static test_op_t num_after(int n) {
@@ -65,6 +73,10 @@ static test_op_t len_is(int n) {
   return (test_op_t) { LEN, n, false, {} };
 }
 
+static test_op_t delete(void) {
+  return (test_op_t) { DELETE, 0, false, { 0, 0 } };
+}
+
 static char *run_ops(test_op_t ops[]) {
   ct_centroid_t *cur = NULL;
   ct_tree_t *t = ct_new();
@@ -75,15 +87,19 @@ static char *run_ops(test_op_t ops[]) {
       ct_free(t);
       return NULL;
     case INSERT:
+      printf("INSERT {%f, %f}\n", c.centroid.val, c.centroid.count);
       cur = ct_create(t, c.centroid);
       break;
     case LEN:
+      printf("LEN %d\n", c.n);
       mu_assert("len is", ct_len(t) == c.n);
       break;
     case UPDATE:
-      ct_update(cur, c.centroid);
+      printf("UPDATE {%f, %f} -> {%f, %f}\n", cur->val, cur->count, c.centroid.val, c.centroid.count);
+      ct_update(t, cur, c.centroid);
       break;
     case NUM_AFTER:
+      printf("NUM_AFTER {%f, %f} %d \n", cur->val, cur->count, c.n);
       for (int j = c.n; j >= 0; j--) {
         cur = ct_next(cur);
         mu_assert("fewer after than expected", cur != NULL || j == 0);
@@ -91,6 +107,7 @@ static char *run_ops(test_op_t ops[]) {
       mu_assert("more after than expected", cur == NULL);
       break;
     case NUM_BEFORE:
+      printf("NUM_BEFORE {%f, %f} %d \n", cur->val, cur->count, c.n);
       for (int j = c.n; j >= 0; j--) {
         cur = ct_prev(cur);
         mu_assert("fewer before than expected", cur != NULL || j == 0);
@@ -98,16 +115,24 @@ static char *run_ops(test_op_t ops[]) {
       mu_assert("more before than expected", cur == NULL);
       break;
     case NEXT:
+      printf("NEXT {%f, %f} \n", cur->val, cur->count);
       cur = ct_next(cur);
       break;
+    case PREV:
+      printf("PREV {%f, %f} \n", cur->val, cur->count);
+      cur = ct_prev(cur);
+      break;
     case MIN:
+      printf("MIN\n");
       cur = ct_min(t);
       break;
     case MAX:
+      printf("MAX\n");
       cur = ct_max(t);
       break;
     case DELETE:
-      ct_delete(cur);
+      printf("DELETE {%f, %f} \n", cur->val, cur->count);
+      ct_delete(t, cur);
       break;
     case FLOOR:
       break;
@@ -119,10 +144,14 @@ static char *run_ops(test_op_t ops[]) {
       break;
     }
     if (c.check_val) {
-      assert_eq(c.centroid, *cur);
+      printf("EQ {%f, %f} = {%f, %f} \n", cur->val, cur->count, c.centroid.val, c.centroid.count);
+      char *msg = assert_eq(c.centroid, *cur);
+      if (msg) {
+        return msg;
+      }
     }
     mu_assert("is bst", ct_is_bst(t));
-    dump_tree(*t);
+    // dump_tree(t);
   }
   return NULL;
 }
@@ -188,6 +217,12 @@ static char *table_test2() {
     { 7, 1 },
     { 8, 1 },
     { 9, 1 },
+    { 10, 1 },
+    { 1.5, 1 },
+    { 1.4, 1 },
+    { 1.3, 1 },
+    { 1.2, 1 },
+    { 1.1, 1 },
   };
   test_op_t ops[] = {
     insert(d[0]),
@@ -200,19 +235,57 @@ static char *table_test2() {
     insert(d[7]),
     insert(d[8]),
     insert(d[9]),
-    min_is(d[0]),
+    min_is(d[0]), 
     num_after(9),
     max_is(d[9]),
     num_before(9),
     len_is(10),
+    insert(d[10]),
+    insert(d[11]),
+    insert(d[12]),
+    insert(d[13]),
+    insert(d[14]),
+    len_is(15),
+    delete(),
+    len_is(14),
+    min_is(d[0]), 
+    delete(),
+    len_is(13),
+    max_is(d[9]),
+    delete(),
+    len_is(12),
+    min_is(d[13]),
+    next_is(d[12]),
+    next_is(d[11]),
+    delete(),
+    len_is(11),
+    min_is(d[13]),
+    next_is(d[12]),
+    next_is(d[11]),
+    prev_is(d[12]),
+    next_is(d[11]),
+    next_is(d[10]),
+    delete(),
+    len_is(10),
+    max_is(d[8]),
+    prev_is(d[7]),
+    prev_is(d[6]),
+    delete(),
+    len_is(9),
+    max_is(d[8]),
+    prev_is(d[7]),
+    prev_is(d[6]),
+    prev_is(d[5]),
+    prev_is(d[4]),
+    delete(),
+    len_is(8),
     {},
   };
   return run_ops(ops);
 };
 
-
 static char *all_tests() {
-  // mu_run_test(table_test);
+  mu_run_test(table_test);
   mu_run_test(table_test2);
   return NULL;
 }
