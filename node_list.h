@@ -9,13 +9,15 @@ typedef struct node_list {
 } node_list_t;
 
 node_list_t *node_list_new(int cap);
-void node_list_free(node_list_t *);
+void node_list_free(node_list_t *nl);
 
-node_t *node_list_at(node_list_t *l, node_idx_t idx);
-node_t *node_list_get(node_list_t *);
+node_t *node_list_at(node_list_t *nl, node_idx_t idx);
+node_t *node_list_get(node_list_t *n);
+node_list_t *node_list_from_node(node_t *n);
+
 
 // node_list_put puts the node back on the free list
 // it assumes that the node came from a node_list_t *
-void node_list_put(node_t *);
+void node_list_put(node_t *n);
 
 

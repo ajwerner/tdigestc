@@ -9,7 +9,7 @@
 
 static void node_list_init(node_list_t *, int cap);
 
-static inline node_list_t *node_list_from_node(node_t *n) 
+node_list_t *node_list_from_node(node_t *n) 
 {
      return (node_list_t *)((char *)(n - n->idx) - sizeof(node_list_t));
 }
@@ -87,4 +87,12 @@ static void node_list_init(node_list_t *l, int cap)
                .right = (i+1) == cap ? 0 : i+1,
           };
      }
+}
+
+node_t *node_list_at(node_list_t *l, node_idx_t idx) 
+{
+     if (idx == IDX_NULL) {
+          return NULL;
+     }
+     return &(l->nodes[idx]);
 }

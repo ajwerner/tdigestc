@@ -1,6 +1,8 @@
 #pragma once
 
+#include "centroid_tree.h"
 #include "node.h"
+
 
 node_t *min(node_t *);
 node_t *max(node_t *);
@@ -10,6 +12,7 @@ node_t *prev(node_t *);
 node_t *add(node_t *n, node_t *to_add);
 node_t *del(node_t *n, node_t *to_del);
 node_t *del_min(node_t *n);
+node_t *update(node_t *root, node_t *to_update, ct_centroid_t new);
 
 node_t *fix_up(node_t *);
 node_t *rotate_left(node_t *);
