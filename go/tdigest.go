@@ -3,8 +3,6 @@ package tdigest
 
 // #cgo CFLAGS: -O3
 // #include "centroid_tree.h"
-//
-// 
 import "C"
 import (
 	"runtime"

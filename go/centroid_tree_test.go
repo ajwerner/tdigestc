@@ -1,39 +1,26 @@
 package tdigest_test
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/ajwerner/tdigest/go"
-	"math/rand"
-	"time"
-	"fmt"
 )
 
 func BenchmarkInsert(b *testing.B) {
 	n := tdigest.New(b.N)
-	for i := 0; i< b.N; i++ {
-		n.Add(rand.Float64(), rand.Float64())
-	}
-}
-
-func TestMany(t *testing.T) {
-	const N = 10000
-	n := tdigest.New(N)
-	type centroid struct{
+	type centroid struct {
 		Count float64
-		Val float64
+		Val   float64
 	}
-	d := make([]centroid, 0, N)
-	for i := 0; i < N; i++ {
+	d := make([]centroid, 0, b.N)
+	for i := 0; i < b.N; i++ {
 		d = append(d, centroid{rand.Float64(), rand.Float64()})
 	}
-	
-	for i, c := range d {
-		start := time.Now()
+	b.ResetTimer()
+	for _, c := range d {
 		n.Add(c.Val, c.Count)
-		fmt.Println(i, time.Since(start))
 	}
-
 }
 
 func TestCentroidTree(t *testing.T) {
@@ -60,6 +47,6 @@ func AssertCentroid(t *testing.T, c *tdigest.Centroid, val, count float64) {
 	if got := c.Count(); got != count {
 		t.Fatalf("Min should be %v, got %v", count, got)
 	} else if got := c.Val(); got != val {
-		t.Fatalf("Val should be %v, got %v",  val, got)
+		t.Fatalf("Val should be %v, got %v", val, got)
 	}
 }
