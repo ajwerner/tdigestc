@@ -1,7 +1,7 @@
 cc_library(
     name = "centroid_tree",
     hdrs = [
-        "centroid_tree.h"
+        "centroid_tree.h",
     ],
     srcs = [
         "node.h",
@@ -20,6 +20,6 @@ cc_test(
         ":centroid_tree",
     ],
     srcs = [
-        "centroid_tree_test.c"
+        "centroid_tree_test.c",
     ],
 )

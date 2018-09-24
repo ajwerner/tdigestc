@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "centroid_tree.c",
+        "centroid_tree.h",
+        "centroid_tree_internal.c",
+        "centroid_tree_internal.h",
+        "centroid_tree_test.c",
+        "node.c",
+        "node.h",
+        "node_list.c",
+        "node_list.h",
+        "tdigest.go",
+        "tdigest.h",
+    ],
+    cgo = True,
+    copts = ["-Igo/go"],
+    importpath = "github.com/example/project/go",
+    visibility = ["//visibility:public"],
+)
