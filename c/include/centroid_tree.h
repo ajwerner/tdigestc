@@ -54,6 +54,15 @@ typedef struct  {
 // The caller must call ct_free to destroy the tree.
 ct_tree_t *ct_new();
 
+// ct_new creates a new centroid_tree using dynamic allocation.
+// It should only fail to insert if it cannot allocate more memory (which is
+// pretty unlikely). The case where failure can occur is only insert which
+// returns a boolean to report failure.
+// 
+// The caller must call ct_free to destroy the tree.
+ct_tree_t *ct_new_with_size(int size);
+
+
 // ct_free frees a centroid_tree allocated through new.
 void ct_free(ct_tree_t *t);
 

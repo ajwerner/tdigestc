@@ -1,1 +1,1 @@
-../c/centroid_tree.h
+../c/include/centroid_tree.h

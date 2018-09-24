@@ -1,1 +1,0 @@
-../c/centroid_tree_test.c

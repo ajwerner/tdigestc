@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 #include "centroid_tree.h"
 
 #define mu_assert(message, test) do { if (!(test)) return message; } while (0)
@@ -346,13 +348,35 @@ static char *all_tests() {
      return NULL;
 }
 
+double drand ( double low, double high )
+{
+    return ( (double)rand() * ( high - low ) ) / (double)RAND_MAX + low;
+}
+
+#define N 1000000
+
 int main(void) {
-     char *result = all_tests();
-     printf("Tests run: %d\n", tests_run);
-     if (result != NULL) {
-          printf("%s\n", result);
-          return 1;
-     } else {
-          printf("ALL TESTS PASSED\n");
+     srand(time(NULL));
+     ct_tree_t *t = ct_new_with_size(N+1);
+     double d[N];
+     for (int i = 0; i < N; i++) {
+          d[i] = drand(0, 4);
      }
+     clock_t start = clock();
+     for (int i = 0; i < N; i++) {
+          ct_create(t, (ct_centroid_t) { d[i], 1 });
+     }
+     clock_t end = clock();
+     double total = ((double)(end)-(double)(start))/(double)(CLOCKS_PER_SEC);
+     double per = total / (double)(N);
+     printf("it took %f or %f per\n", total, per);
+     // char *result = all_tests();
+
+     /* printf("Tests run: %d\n", tests_run); */
+     /* if (result != NULL) { */
+     /*      printf("%s\n", result); */
+     /*      return 1; */
+     /* } else { */
+     /*      printf("ALL TESTS PASSED\n"); */
+     /* } */
 }
