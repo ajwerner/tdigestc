@@ -10,7 +10,7 @@
 // node operations
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef unsigned long node_idx_t;
+typedef unsigned long long node_idx_t;
 
 // empty_mask is used to mark the tree as initially empty.
 // #define NO_ALLOC_MASK 0x80000000
@@ -111,7 +111,7 @@ static inline node_t *root(ct_tree_t *t)
 static void set_root(ct_tree_t *t, node_t *root)
 {
      if (root) {
-          t->root = root->idx;
+          t->root = idx(root);
      } else {
           t->root = IDX_NULL;
      }
@@ -312,7 +312,7 @@ static void node_list_init(node_list_t *, int cap);
 
 node_list_t *node_list_from_node(node_t *n) 
 {
-     return (node_list_t *)((char *)(n - n->idx) - sizeof(node_list_t));
+     return (node_list_t *)((char *)(n - idx(n)) - sizeof(node_list_t));
 }
 
 node_list_t *node_list_new(int cap) 

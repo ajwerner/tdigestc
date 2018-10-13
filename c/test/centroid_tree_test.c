@@ -355,7 +355,8 @@ double drand ( double low, double high )
 
 #define N 1000000
 
-int main(void) {
+void timed(void) 
+{
      srand(time(NULL));
      ct_tree_t *t = ct_new_with_size(N+1);
      double d[N];
@@ -370,13 +371,17 @@ int main(void) {
      double total = ((double)(end)-(double)(start))/(double)(CLOCKS_PER_SEC);
      double per = total / (double)(N);
      printf("it took %f or %f per\n", total, per);
-     // char *result = all_tests();
+}
 
-     /* printf("Tests run: %d\n", tests_run); */
-     /* if (result != NULL) { */
-     /*      printf("%s\n", result); */
-     /*      return 1; */
-     /* } else { */
-     /*      printf("ALL TESTS PASSED\n"); */
-     /* } */
+int main(void) {
+     timed();
+     char *result = all_tests();
+
+     printf("Tests run: %d\n", tests_run);
+     if (result != NULL) {
+          printf("%s\n", result);
+          return 1;
+     } else {
+          printf("ALL TESTS PASSED\n");
+     }
 }
