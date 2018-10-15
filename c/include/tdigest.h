@@ -30,6 +30,6 @@ void td_add(td_histogram_t *h, double mean, double count);
 
 double td_value_at(td_histogram_t *h, double q);
 
-double quantile_of(td_histogram_t *h, double val);
+double td_quantile_of(td_histogram_t *h, double val);
 
-double total_count(td_histogram_t *h);
+double td_total_count(td_histogram_t *h);

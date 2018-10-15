@@ -1,21 +1,20 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "go_default_library",
     srcs = [
-        "centroid_tree.c",
-        "centroid_tree.h",
-        "centroid_tree_internal.c",
-        "centroid_tree_internal.h",
-        "node.c",
-        "node.h",
-        "node_list.c",
-        "node_list.h",
-        "stretchy_buffer.h",
+        "tdigest.c",
         "tdigest.go",
         "tdigest.h",
     ],
     cgo = True,
-    importpath = "github.com/example/project/go",
+    copts = ["-O3"],
+    importpath = "github.com/ajwerner/tdigest/go",
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["tdigest_test.go"],
+    embed = [":go_default_library"],
 )

@@ -1,11 +1,4 @@
 cc_library(
-    name = "centroid_tree",
-    strip_include_prefix = "include/",
-    hdrs = ["include/centroid_tree.h"],
-    srcs = ["src/centroid_tree.c"],
-)
-
-cc_library(
     name = "tdigest",
     strip_include_prefix = "include/",
     hdrs = ["include/tdigest.h"],
@@ -19,15 +12,5 @@ cc_test(
     ],
     srcs = [
         "test/tdigest_test.c",
-    ],
-)
-
-cc_test(
-    name = "centroid_tree_test",
-    deps = [
-        ":centroid_tree",
-    ],
-    srcs = [
-        "test/centroid_tree_test.c",
     ],
 )

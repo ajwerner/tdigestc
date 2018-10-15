@@ -90,8 +90,8 @@ double td_value_at(td_histogram_t *h, double q) {
      // if right of the last node, use the last node, use it
      double goal = q * h->merged_count;
      double k = 0;
-     int i;
-     node_t *n;
+     int i = 0;
+     node_t *n = NULL;
      for (i = 0; i < h->merged_nodes; i++) {
           n = &h->nodes[i];
           if (k + n->count > goal) {
