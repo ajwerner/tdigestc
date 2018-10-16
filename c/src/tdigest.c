@@ -34,15 +34,15 @@ struct td_histogram {
      node_t nodes[0];
 };
 
-static inline bool cap_is_okay(double compression, int cap) {
+static bool cap_is_okay(double compression, int cap) {
      return (cap > ((2*compression) + 10));
 }
 
-static inline bool should_merge(td_histogram_t *h) {
+static bool should_merge(td_histogram_t *h) {
      return ((h->merged_nodes + h->unmerged_nodes) == h->cap);
 }
 
-static inline int next_node(td_histogram_t *h) {
+static int next_node(td_histogram_t *h) {
      return h->merged_nodes + h->unmerged_nodes;
 }
 
@@ -138,7 +138,7 @@ void td_add(td_histogram_t *h, double mean, double count) {
      h->unmerged_count += count;
 }
 
-static int compar_nodes(const void *v1, const void *v2) {
+static int compare_nodes(const void *v1, const void *v2) {
      node_t *n1 = (node_t *)(v1);
      node_t *n2 = (node_t *)(v2);
      if (n1->mean < n2->mean) {
@@ -155,7 +155,7 @@ static void merge(td_histogram_t *h) {
           return;
      }
      int N = h->merged_nodes + h->unmerged_nodes;
-     qsort((void *)(h->nodes), N, sizeof(node_t), &compar_nodes);
+     qsort((void *)(h->nodes), N, sizeof(node_t), &compare_nodes);
      double total_count = h->merged_count + h->unmerged_count;
      double denom = 2 * M_PI * total_count * log(total_count);
      double normalizer = h->compression / denom;

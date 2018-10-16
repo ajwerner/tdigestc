@@ -1,0 +1,6 @@
+{
+  "description": "runtime dependencies for tdigest lib example",
+  "devDependencies": {
+    "jasmine": "~2.8.0"
+  }
+}

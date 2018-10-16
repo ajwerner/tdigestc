@@ -1,0 +1,23 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test", "nodejs_binary", "jasmine_node_test")
+
+cc_binary(
+    name = "tdigest.js",
+    srcs = [
+        "tdigest_emscripten.c",
+    ],
+    deps = [
+        "//c:tdigest",
+    ],
+)
+
+jasmine_node_test(
+    name = "tdigest_test",
+    srcs = [
+        "tdigest.spec.js",
+        ":tdigest.js",
+    ],
+    data = [
+        "@npm//jasmine",
+    ],
+)
+

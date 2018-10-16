@@ -16,3 +16,38 @@ go_rules_dependencies()
 go_register_toolchains()
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 gazelle_dependencies()
+
+git_repository(
+    name = "build_bazel_rules_nodejs",
+    remote = "https://github.com/bazelbuild/rules_nodejs.git",
+    tag = "0.15.0", # check for the latest tag when you install
+)
+
+new_http_archive(
+    name = 'emscripten_toolchain',
+    url = 'https://github.com/kripken/emscripten/archive/1.38.11.tar.gz',
+    build_file = 'emscripten-toolchain.BUILD',
+    strip_prefix = "emscripten-1.38.11",
+)
+
+new_http_archive(
+    name = 'emscripten_clang',
+    url = 'https://s3.amazonaws.com/mozilla-games/emscripten/packages/llvm/tag/linux_64bit/emscripten-llvm-e1.38.11.tar.gz',
+    build_file = 'emscripten-clang.BUILD',
+    strip_prefix = "emscripten-llvm-e1.38.11",
+)
+
+load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+rules_nodejs_dependencies()
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
+
+node_repositories(
+    package_json = ["//js:package.json"],
+)
+
+yarn_install(
+    name = "npm",
+    package_json = "//js:package.json",
+    yarn_lock = "//js:yarn.lock",
+)

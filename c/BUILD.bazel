@@ -1,8 +1,18 @@
+filegroup(
+    name = "headers",
+    srcs = [
+        "include/tdigest.h",
+    ],
+    path = ".",
+    visibility = [ "//visibility:public" ],
+)
+
 cc_library(
     name = "tdigest",
     strip_include_prefix = "include/",
     hdrs = ["include/tdigest.h"],
     srcs = ["src/tdigest.c"],
+    visibility = [ "//visibility:public" ],
 )
 
 cc_test(
