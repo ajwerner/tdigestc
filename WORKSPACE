@@ -25,16 +25,16 @@ git_repository(
 
 new_http_archive(
     name = 'emscripten_toolchain',
-    url = 'https://github.com/kripken/emscripten/archive/1.38.11.tar.gz',
+    url = 'https://github.com/kripken/emscripten/archive/1.38.13.tar.gz',
     build_file = 'emscripten-toolchain.BUILD',
-    strip_prefix = "emscripten-1.38.11",
+    strip_prefix = "emscripten-1.38.13",
 )
 
 new_http_archive(
     name = 'emscripten_clang',
-    url = 'https://s3.amazonaws.com/mozilla-games/emscripten/packages/llvm/tag/linux_64bit/emscripten-llvm-e1.38.11.tar.gz',
+    url = 'https://s3.amazonaws.com/mozilla-games/emscripten/packages/llvm/tag/linux_64bit/emscripten-llvm-e1.38.13.tar.gz',
     build_file = 'emscripten-clang.BUILD',
-    strip_prefix = "emscripten-llvm-e1.38.11",
+    strip_prefix = "emscripten-llvm-e1.38.13",
 )
 
 load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")

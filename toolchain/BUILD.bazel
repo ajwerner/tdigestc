@@ -8,14 +8,13 @@ filegroup(
         "emar.sh",
         "@emscripten_toolchain//:all",
         "@emscripten_clang//:all",
-        ":emscripten_cache_content"
     ],
 )
 
-filegroup(
-    name = "emscripten_cache_content",
-    srcs = glob(["emscripten_cache/**/*"]),
-)
+# filegroup(
+#     name = "emscripten_cache_content",
+#     srcs = glob(["emscripten_cache/**/*"]),
+# )
 
 cc_toolchain(
     name = "asmjs_toolchain",

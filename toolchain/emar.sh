@@ -13,11 +13,11 @@ export EMCC_SKIP_SANITY_CHECK=1
 export EMCC_WASM_BACKEND=0
 
 mkdir -p "tmp/emscripten_cache"
-export EM_CACHE="tmp/emscripten_cache"
+# export EM_CACHE="tmp/emscripten_cache"
 export TEMP_DIR="tmp"
 
 # Prepare the cache content so emscripten doesn't try to rebuild it all the time
-cp -r toolchain/emscripten_cache/* tmp/emscripten_cache
+# cp -r toolchain/emscripten_cache/* tmp/emscripten_cache || true
 # Run emscripten to compile and link
 set -x
 

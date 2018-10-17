@@ -1,1 +1,0 @@
-0:/home/awerner32/src/github.com/juj/emsdk/clang/e1.38.13_64bit

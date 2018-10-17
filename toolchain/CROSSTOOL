@@ -44,13 +44,17 @@ toolchain {
     name: "strip"
     path: "/bin/false"
   }
+  compiler_flag: "-s"
+  compiler_flag: "EXTRA_EXPORTED_RUNTIME_METHODS=[ccall,cwrap]"
+  linker_flag: "-s"
+  linker_flag: "EXTRA_EXPORTED_RUNTIME_METHODS=[ccall,cwrap]"
   compiler_flag: "-isystem"
   compiler_flag: "external/emscripten_toolchain/system/include/libcxx"
   compiler_flag: "-isystem"
   compiler_flag: "external/emscripten_toolchain/system/include/libc"
   compiler_flag: "-isystem"
   compiler_flag: "external/emscripten_toolchain/system/include"
-  compiler_flag: "-no-canonical-prefixes"
+ 
 }
 
 default_toolchain {
