@@ -1,12 +1,12 @@
 # We will use new CROSSTOOL file for our toolchain
-build:asmjs --crosstool_top=//toolchain:emscripten
+build:wasm --crosstool_top=//toolchain:emscripten
 
 # Since emscripten can target both asmjs and web assembly,
 # we'll use --cpu as differentiator. We will not configure 
 # web assembly toolchain in this tutorial though.
-build:asmjs --cpu=asmjs
+build:wasm --cpu=wasm
 
 # Bazel uses internal tools many of which are written in 
 # C++ (such as `process-wrapper`). Therefore we still need a sane
 # C++ toolchain for these tools.
-build:asmjs --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+build:wasm --host_crosstool_top=@bazel_tools//tools/cpp:toolchain

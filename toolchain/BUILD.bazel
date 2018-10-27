@@ -17,10 +17,10 @@ filegroup(
 # )
 
 cc_toolchain(
-    name = "asmjs_toolchain",
+    name = "wasm_toolchain",
     all_files = ":all",
     compiler_files = ":all",
-    cpu = "asmjs",
+    cpu = "wasm",
     dwp_files = ":empty",
     dynamic_runtime_libs = [":empty"],
     linker_files = ":all",
@@ -33,6 +33,6 @@ cc_toolchain(
 cc_toolchain_suite(
     name = "emscripten",
     toolchains = {
-         "asmjs|emscripten": ":asmjs_toolchain",
+         "wasm|emscripten": ":wasm_toolchain",
     },
 )

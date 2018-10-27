@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <stdio.h>
-#include <assert.h>
 #include <math.h>
 
 #include "tdigest.h"
@@ -34,8 +32,9 @@ struct td_histogram {
      node_t nodes[0];
 };
 
-static bool cap_is_okay(double compression, int cap) {
-     return (cap > ((2*compression) + 10));
+
+static int cap_from_compression(double compression) {
+     return (6 * (int)(compression)) + 10;
 }
 
 static bool should_merge(td_histogram_t *h) {
@@ -46,31 +45,38 @@ static int next_node(td_histogram_t *h) {
      return h->merged_nodes + h->unmerged_nodes;
 }
 
+
 static void merge(td_histogram_t *h);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////
 
-td_histogram_t *td_new(double compression, int cap) {
-     if (!cap_is_okay(compression, cap)) {
-          return NULL;
-     }
-     size_t memsize = sizeof(td_histogram_t) + (cap * sizeof(node_t));
-     td_histogram_t *h = (td_histogram_t *)(malloc(memsize));
+size_t td_buf_size(double compression) {
+     return sizeof(td_histogram_t) + 
+          (cap_from_compression(compression) * sizeof(node_t));
+}
+
+td_histogram_t *td_init(double compression, size_t buf_size, char *buf) {
+     td_histogram_t *h = (td_histogram_t *)(buf);
      if (!h) {
           return NULL;
      }
-     bzero((void *)(h), memsize);
+     bzero((void *)(h), buf_size);
      *h = (td_histogram_t) {
           .compression = compression,
-          .cap = cap,
+          .cap = (buf_size - sizeof(td_histogram_t)) / sizeof(node_t),
           .merged_nodes = 0,
           .merged_count = 0,
           .unmerged_nodes = 0,
           .unmerged_count = 0,
      };
      return h;
+}
+
+td_histogram_t *td_new(double compression) {
+     size_t memsize = td_buf_size(compression);
+     return td_init(compression, memsize, (char *)(malloc(memsize)));
 }
 
 void td_free(td_histogram_t *h) {
@@ -85,6 +91,9 @@ double td_value_at(td_histogram_t *h, double q) {
      merge(h);
      if (q < 0 || q > 1 || h->merged_nodes == 0) {
           return NAN;
+     }
+     if (h->merged_nodes == 1) {
+          return h->nodes[0].mean;
      }
      // if left of the first node, use the first node
      // if right of the last node, use the last node, use it

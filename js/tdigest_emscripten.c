@@ -1,9 +1,21 @@
 #include <emscripten.h>
+#include <stdlib.h>
 #include "tdigest.h"
 
+EMSCRIPTEN_KEEPALIVE
+int requiredBufferSize(double compression) {
+     
+     return td_buf_size(compression);
+}
+
 EMSCRIPTEN_KEEPALIVE 
-td_histogram_t *newHistogram(double compression, int size) {
-     return td_new(compression, size);
+td_histogram_t *newHistogram(double compression) {
+     return td_new(compression);
+}
+
+EMSCRIPTEN_KEEPALIVE
+td_histogram_t *initHistogram(double compression, size_t buf_size, char *buf) {
+     return td_init(compression, buf_size, buf);
 }
 
 EMSCRIPTEN_KEEPALIVE

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 #include "tdigest.h"
 
 #define mu_assert(message, test) do { if (!(test)) return message; } while (0)
@@ -17,7 +18,7 @@ double randfrom(double min, double max)
 }
 
 static char *test_basic() {
-     td_histogram_t *t = td_new(10, 1000);
+     td_histogram_t *t = td_new(10);
      mu_assert("created_histogram", t != NULL);
      td_add(t, 0, 1);
      td_add(t, 10, 1);
@@ -31,7 +32,7 @@ static char *test_uniform_rand() {
      
      srand(time(NULL));
      clock_t start = clock();
-     td_histogram_t *t = td_new(1000, 5000);
+     td_histogram_t *t = td_new(1000);
      int N = 1000000;
      for (int i = 0; i < N; i++) {
           double v = randfrom(0, 100);
@@ -46,13 +47,36 @@ static char *test_uniform_rand() {
      for (int i = 0; i < 13; i++) {
           printf("%f: %f\n", f[i], td_value_at(t, f[i]));
      }
+     td_free(t);
+     return NULL;
+}
 
+static char *test_nans() {
+     td_histogram_t *t = td_new(1000);
+     mu_assert("empty value at 0", isnan(td_value_at(t, 0)));
+     mu_assert("empty value at .5", isnan(td_value_at(t, 0.5)));
+     mu_assert("empty value at 1", isnan(td_value_at(t, 1)));
+     td_add(t, 1, 1);
+     mu_assert("value at -0.1", isnan(td_value_at(t, -0.1)));
+     mu_assert("value at 1.1", isnan(td_value_at(t, 1.1)));
+     td_free(t);
+     return NULL;
+}
+
+static char *test_two_interp() {
+     td_histogram_t *t = td_new(1000);
+     td_add(t, 1, 1);
+     td_add(t, 10, 1);
+     mu_assert("test_two_interp: value at .9", isfinite(td_value_at(t, .9)));
+     td_free(t);
      return NULL;
 }
 
 static char *all_tests() {
      mu_run_test(test_basic);
      mu_run_test(test_uniform_rand);
+     mu_run_test(test_nans);
+     mu_run_test(test_two_interp);
      return NULL;
 }
 

@@ -1,6 +1,18 @@
 {
-  "description": "runtime dependencies for tdigest lib example",
+  "name": "tdigestc",
+  "description": "Compact, mergable data structure for streaming quantile estimation",
+  "version": "0.0.5",
+  "license": "MIT",
+  "author": {
+    "name": "Andrew Werner",
+    "email": "awerner32@gmail.com"
+  },
+  "files": [
+    "tdigest.js",
+    "tdigest_native.js"
+  ],
   "devDependencies": {
-    "jasmine": "~2.8.0"
+    "jasmine": "~2.8.0",
+    "tdigest": "~0.1.1"
   }
 }

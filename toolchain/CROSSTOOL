@@ -1,13 +1,13 @@
 major_version: "1"
 minor_version: "0"
 
-default_target_cpu: "asmjs"
+default_target_cpu: "wasm"
 
 toolchain {
-  toolchain_identifier: "asmjs-toolchain"
+  toolchain_identifier: "wasm-toolchain"
   host_system_name: "i686-unknown-linux-gnu"
-  target_system_name: "asmjs-unknown-emscripten"
-  target_cpu: "asmjs"
+  target_system_name: "wasm-unknown-emscripten"
+  target_cpu: "wasm"
   target_libc: "unknown"
   compiler: "emscripten"
   abi_version: "unknown"
@@ -44,21 +44,24 @@ toolchain {
     name: "strip"
     path: "/bin/false"
   }
-  compiler_flag: "-s"
-  compiler_flag: "EXTRA_EXPORTED_RUNTIME_METHODS=[ccall,cwrap]"
-  linker_flag: "-s"
-  linker_flag: "EXTRA_EXPORTED_RUNTIME_METHODS=[ccall,cwrap]"
   compiler_flag: "-isystem"
   compiler_flag: "external/emscripten_toolchain/system/include/libcxx"
   compiler_flag: "-isystem"
   compiler_flag: "external/emscripten_toolchain/system/include/libc"
   compiler_flag: "-isystem"
   compiler_flag: "external/emscripten_toolchain/system/include"
- 
+  linker_flag: "-s"
+  linker_flag: "EXTRA_EXPORTED_RUNTIME_METHODS=[ccall,cwrap]"
+  linker_flag: "-s"
+  linker_flag: "WASM=1"
+  linker_flag: "-s"
+  linker_flag: "MODULARIZE=1"
+  linker_flag: "-s"
+  linker_flag: "BINARYEN_ASYNC_COMPILATION=0"
 }
 
 default_toolchain {
-  cpu: "asmjs"
-  toolchain_identifier: "asmjs-toolchain"
+  cpu: "wasm"
+  toolchain_identifier: "wasm-toolchain"
 }
 

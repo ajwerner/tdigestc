@@ -1,7 +1,8 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test", "nodejs_binary", "jasmine_node_test")
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test", "nodejs_binary", "jasmine_node_test", "npm_package")
+load("//toolchain:wasm.bzl", "wasm_library")
 
-cc_binary(
-    name = "tdigest.js",
+wasm_library(
+    name = "tdigest_native",
     srcs = [
         "tdigest_emscripten.c",
     ],
@@ -10,15 +11,28 @@ cc_binary(
     ],
 )
 
+filegroup(
+    name = "tdigest_lib",
+    srcs = [
+        ":tdigest_native",
+        "tdigest.js",
+    ],
+)
+
 jasmine_node_test(
     name = "tdigest_test",
     srcs = [
         "tdigest.spec.js",
-        "tdigest_bind.js",
-        ":tdigest.js",
+        ":tdigest_lib",
     ],
     data = [
         "@npm//jasmine",
+        "@npm//tdigest",
     ],
 )
 
+npm_package(
+    name = "tdigest",
+    srcs = ["package.json"],
+    deps = [":tdigest_lib"],
+)

@@ -20,7 +20,24 @@ export TEMP_DIR="tmp"
 # cp -r toolchain/emscripten_cache/* tmp/emscripten_cache || true
 # Run emscripten to compile and link
 
-python external/emscripten_toolchain/emcc.py -s WASM=0 $@
+IS_TAR=false
+if [[ "$@" =~ -o\ ([^[:space:]]*\.js.tar.gz)[[:space:]] ]]; then
+  IS_TAR=true
+  TAR_FILE=${BASH_REMATCH[1]}
+  JS_FILE=${TAR_FILE%.tar.gz}
+  ARGS="${@/${TAR_FILE}/${JS_FILE}}"
+else
+  ARGS="${@}"
+fi
+python external/emscripten_toolchain/emcc.py ${ARGS}
+
 # Remove the first line of .d file (emscripten resisted all my attempts to make
 # it realize it's just the absolute location of the source)
 find . -name "*.d" -exec sed -i '2d' {} \;
+
+# Build the tar if we're building a tar
+if [[ ${IS_TAR} == "true" ]]; then
+  OUT_DIR="$(dirname ${JS_FILE})"
+  INPUTS=$(cd "${OUT_DIR}" && find . -type f)
+  tar -czf "${TAR_FILE}" -C "${OUT_DIR}" ${INPUTS[@]}
+fi

@@ -20,5 +20,6 @@ export TEMP_DIR="tmp"
 # cp -r toolchain/emscripten_cache/* tmp/emscripten_cache || true
 # Run emscripten to compile and link
 set -x
+echo "$@"
 
-python external/emscripten_toolchain/emar.py "$@" 
+python external/emscripten_toolchain/emar.py "$@"
