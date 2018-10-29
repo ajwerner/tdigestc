@@ -1,6 +1,11 @@
 workspace(name = "ajwerner_tdigest")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+################################################################################
+# go
+################################################################################
+
 http_archive(
     name = "io_bazel_rules_go",
     urls = ["https://github.com/bazelbuild/rules_go/releases/download/0.15.3/rules_go-0.15.3.tar.gz"],
@@ -16,6 +21,36 @@ go_rules_dependencies()
 go_register_toolchains()
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 gazelle_dependencies()
+
+################################################################################
+# python
+################################################################################
+
+git_repository(
+    name = "io_bazel_rules_python",
+    remote = "https://github.com/bazelbuild/rules_python.git",
+    commit = "8b5d0683a7d878b28fffe464779c8a53659fc645",
+)
+
+load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
+
+
+pip_repositories()
+
+pip_import(
+    name = "my_deps",
+    requirements = "//python:requirements.txt",
+)
+
+load("@my_deps//:requirements.bzl", "pip_install")
+pip_install()
+
+# Only needed for PIP support:
+
+
+################################################################################
+# javascript
+################################################################################
 
 git_repository(
     name = "build_bazel_rules_nodejs",

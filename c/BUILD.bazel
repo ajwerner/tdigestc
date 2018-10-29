@@ -15,6 +15,16 @@ cc_library(
     visibility = [ "//visibility:public" ],
 )
 
+cc_binary(
+    name = "tdigest.so",
+    deps = [
+        ":tdigest",
+    ],
+    visibility = [ "//visibility:public" ], 
+    linkstatic = 1,
+    linkshared = 1,
+)
+
 cc_test(
     name = "tdigest_test",
     deps = [
