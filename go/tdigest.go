@@ -1,19 +1,19 @@
+// Copyright (c) 2018 Andrew Werner, All rights reserved.
+
+// Package tdigest provides a wrapper to native C TDigest library
 package tdigest
 
-// #cgo CFLAGS: -O3
 // #cgo LDFLAGS: -lm
 // #include "tdigest.h"
 import "C"
-import (
-	"runtime"
-)
+import "runtime"
 
 type Histogram struct {
 	p *C.td_histogram_t
 }
 
 func New(size int) *Histogram {
-	t := &Histogram{p: C.td_new(C.double(size), C.int(5*size+10))}
+	t := &Histogram{p: C.td_new(C.double(size))}
 	if t.p == nil {
 		panic("Failed to allocate")
 	}
@@ -23,6 +23,10 @@ func New(size int) *Histogram {
 
 func free(t *Histogram) {
 	C.td_free(t.p)
+}
+
+func (t *Histogram) Record(val float64) {
+	C.td_add(t.p, C.double(val), C.double(1))
 }
 
 func (t *Histogram) Add(val, count float64) {

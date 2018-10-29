@@ -40,7 +40,11 @@ td_histogram_t *td_new(double compression);
 // td_free may only be called if the histogram was created with td_new.
 void td_free(td_histogram_t *h);
 
+void td_clean(td_histogram_t *h);
+
 void td_add(td_histogram_t *h, double mean, double count);
+
+void td_merge(td_histogram_t *into, td_histogram_t *from);
 
 double td_value_at(td_histogram_t *h, double q);
 

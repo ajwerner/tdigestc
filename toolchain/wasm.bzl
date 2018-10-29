@@ -8,6 +8,5 @@ def wasm_library(name, srcs, deps = [], **kwargs):
         name = name,
         srcs = [name+".js.tar.gz"],
         outs = [name+".js", name+".wasm"],
-        cmd = "set -x; tar -tvf $(SRCS);  tar -xf $(SRCS) -C $(@D)",
+        cmd = "tar -xf $(SRCS) -C $(@D)",
     )
-

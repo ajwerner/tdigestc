@@ -19,7 +19,4 @@ export TEMP_DIR="tmp"
 # Prepare the cache content so emscripten doesn't try to rebuild it all the time
 # cp -r toolchain/emscripten_cache/* tmp/emscripten_cache || true
 # Run emscripten to compile and link
-set -x
-echo "$@"
-
 python external/emscripten_toolchain/emar.py "$@"

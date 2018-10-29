@@ -7,6 +7,7 @@
 
 #define M_PI 3.14159265358979323846
 
+
 // TODO: make a union on count to store the sum of counts below in
 // merged nodes to make queries cheaper.
 
@@ -32,6 +33,9 @@ struct td_histogram {
      node_t nodes[0];
 };
 
+static bool is_very_small(double val) {
+     return !(val > .000000001 || val < -.000000001);
+}
 
 static int cap_from_compression(double compression) {
      return (6 * (int)(compression)) + 10;
@@ -44,7 +48,6 @@ static bool should_merge(td_histogram_t *h) {
 static int next_node(td_histogram_t *h) {
      return h->merged_nodes + h->unmerged_nodes;
 }
-
 
 static void merge(td_histogram_t *h);
 
@@ -83,6 +86,15 @@ void td_free(td_histogram_t *h) {
      free((void *)(h));
 }
 
+void td_merge(td_histogram_t *into, td_histogram_t *from) {
+     merge(into);
+     merge(from);
+     for (int i = 0; i < from->merged_nodes; i++) {
+          node_t *n = &from->nodes[i];
+          td_add(into, n->mean, n->count);
+     }
+}
+
 double td_total_count(td_histogram_t *h) {
      return h->merged_count + h->unmerged_count;
 }
@@ -109,11 +121,12 @@ double td_value_at(td_histogram_t *h, double q) {
           k += h->nodes[i].count;
      }
      double delta_k = goal - k - (n->count/2);
-     if (delta_k < .000000001 && delta_k > -.000000001) {
+     if (is_very_small(delta_k)) {
           return n->mean;
      }
      bool right = delta_k > 0;
-     if ((i == 0 && !right) || ((i+1) == h->merged_nodes && right)) {
+     if ((right && ((i+1) == h->merged_nodes)) ||
+         (!right && (i == 0))) {
           return n->mean;
      }
      node_t *nl;
