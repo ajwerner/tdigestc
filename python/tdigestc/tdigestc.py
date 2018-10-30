@@ -1,12 +1,28 @@
 from ctypes import CDLL, c_void_p, c_double
-
+from os.path import dirname, join, exists
 def wrap_func(lib, func_name, restype, argtypes):
     f = getattr(lib, func_name)
     f.restype = restype
     f.argtypes = argtypes
     return f
-    
-libtdigest = CDLL("c/tdigest.so")
+
+def accumulate(vals, func):
+    prev=None
+    for v in vals:
+        prev = func(prev, v) if prev is not None else v
+        yield prev
+
+PATH="python/tdigestc/tdigest.so"
+places=list(accumulate(reversed(PATH.split("/")),
+                       lambda a, b: join(b, a)))
+libtdigest=None
+for place in places:
+    if exists(place):
+        libtdigest = CDLL(place)
+        break
+if libtdigest is None:
+    raise RuntimeError("can't find so")
+
 td_new = wrap_func(libtdigest, "td_new", c_void_p, [c_double])
 td_free = wrap_func(libtdigest, "td_free", None, [c_void_p])
 td_add = wrap_func(libtdigest, "td_add", None, [c_void_p, c_double, c_double])

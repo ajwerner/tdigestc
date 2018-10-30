@@ -1,0 +1,21 @@
+genrule(
+    name="tdigest_native_lib",
+    srcs=["//c:tdigest.so"],
+    outs=["tdigest.so"],
+    cmd="cp $(location //c:tdigest.so) $@",
+)
+
+py_library(
+    name = "tdigestc",
+    srcs = glob(["*.py"]),
+    data = ["tdigest.so"],
+    visibility = ["//visibility:public"],
+)
+
+py_test(
+    name = "tdigestc_test",
+    srcs = [
+        "tdigestc_test.py",
+    ],
+    deps = [":tdigestc"],    
+)

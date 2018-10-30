@@ -78,13 +78,13 @@ rules_nodejs_dependencies()
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
 
 node_repositories(
-    package_json = ["//js:package.json"],
+    package_json = ["//js:package.json.tmpl"],
     node_version = "8.12.0",
     yarn_version = "1.5.1",
 )
 
 yarn_install(
     name = "npm",
-    package_json = "//js:package.json",
+    package_json = "//js:package.json.tmpl",
     yarn_lock = "//js:yarn.lock",
 )

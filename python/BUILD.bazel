@@ -1,31 +1,13 @@
-py_library(
-    name = "tdigestc",
-    srcs = glob(["tdigestc/*.py"]),
-    data = ["//c:tdigest.so"],
-)
-
-py_test(
-    name = "tdigestc_test",
-    srcs = [
-        "tdigestc_test.py",
-    ],
-    deps = [":tdigestc"],    
-)
-
-py_binary(
-    name = "tdigest_debug",
-    srcs = [
-        "tdigest_debug.py",
-    ],
-    deps = [":tdigestc"],
-    default_python_version="PY3",
-)
-
+load("//:version.bzl", "write_version", "VERSION")
 load(":setuptools.bzl", "setuptools_pkg")
+
+write_version(
+    template="setup.py.tmpl",
+)
 
 setuptools_pkg(
     name="pypi",
     setup_file="setup.py",
-    lib=":tdigestc",
-    
+    lib="//python/tdigestc",
+    version=VERSION,
 )

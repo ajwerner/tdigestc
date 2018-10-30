@@ -1,4 +1,5 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load(":version.bzl", "VERSION", "write_version")
 
 # gazelle:prefix github.com/ajwerner/tdigest
 gazelle(name = "gazelle")

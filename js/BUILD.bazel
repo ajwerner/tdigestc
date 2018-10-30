@@ -1,5 +1,12 @@
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test", "nodejs_binary", "jasmine_node_test", "npm_package")
+load("//:version.bzl", "VERSION")
 load("//toolchain:wasm.bzl", "wasm_library")
+load("//:version.bzl", "write_version")
+
+write_version(
+    template="package.json.tmpl",
+)
+
 
 wasm_library(
     name = "tdigest_native",
@@ -16,6 +23,7 @@ filegroup(
     srcs = [
         ":tdigest_native",
         "tdigest.js",
+        "package.json",
     ],
 )
 
