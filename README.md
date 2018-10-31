@@ -6,15 +6,20 @@ It represents an experiment in cross-language development.
 The build tool chosen is [bazel](https://github.com/bazelbuild/bazel)..
 
 The hope was to create an experience with the library where it was 
-    * natural to use from all targeted languaged
-    * build for each language comfortably with a single build tool
-    * produce easily includable artifacts
+
+* natural to use from all targeted languaged
+* build for each language comfortably with a single build tool
+* produce easily includable artifacts
+
+It's not clear that all of these goals have been totally acheived.
 
 ## C
 
 C is the core implementation. The code comes in 1 .c file with 1 .h file. 
 You need to just put this into your project or take a compiled so from a bazel build.
 I haven't figured out a better C distribution story but if you have one, let me know.
+
+### Usage
 
 The API is straight forward.
 
@@ -46,6 +51,12 @@ int main(void) {
 The javascript integration works pretty well except for one wart.
 The memory used by the object will need to manually freed to release the underlying memory.
 
+### Installation
+
+The package should be installable from (npm)[https://www.npmjs.com/package/tdigestc]
+
+### Usage
+
 The API seeks to be very similar to the tdigest npm library that exists.
 
 For the testing I run a test to compare the output from that open source library and this one.
@@ -66,6 +77,18 @@ Python is packaged using ctypes and a bundled shared library.
 This has obvious cross platform problems.
 The python rules are set up to build and publish to PyPI but that has not yet been all the way set up.
 
+### Usage
+
+```[python]
+from tdigestc import TDigest
+f = TDigest(100)
+f.add(1)
+f.add(2)
+assert f.value_at(0) == 1
+assert f.value_at(.5) == 1.5
+assert f.value_at(1) == 2
+```
+
 ## Go
 
 For go it's just that the C is symlinked into the directory and it uses cgo.
@@ -74,11 +97,14 @@ The wrapper is not a lot of code.
 The downside here is the overhead of calling in to cgo but it seems like the
 data structure from very preliminary testing is pretty fast.
 
-### How To
+### Installation
 
 ```
 $ go get github.com/ajwerner/tdigestc/go
 ```
+
+### Example
+
 ```[go]
 package main
 
@@ -98,6 +124,8 @@ func main() {
 
 Java is hooked up through the JNI.
 The //java:TDigest target will compile a jar file which contains the TDigest class and self-loading library.
+
+### Usage
 
 ```[java]
 import com.ajwerner.tdigestc.TDigest;
@@ -121,3 +149,4 @@ public class Example {
 * Improve python packaging and distribution
 * Figure out java packaging and distribution
 * Way more testing
+* Consider using binary search in queries
