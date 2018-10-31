@@ -1,16 +1,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <string.h>
 #include <math.h>
 
 #include "tdigest.h"
 
 #define M_PI 3.14159265358979323846
-
-
-// TODO: make a union on count to store the sum of counts below in
-// merged nodes to make queries cheaper.
 
 typedef struct node {
      double mean;
@@ -56,12 +51,20 @@ static void merge(td_histogram_t *h);
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////
 
-size_t td_buf_size(double compression) {
+
+
+static size_t td_required_buf_size(double compression) {
      return sizeof(td_histogram_t) + 
           (cap_from_compression(compression) * sizeof(node_t));
 }
 
-td_histogram_t *td_init(double compression, size_t buf_size, char *buf) {
+// td_init will initialize a td_histogram_t inside buf which is buf_size bytes.
+// If buf_size is too small (smaller than compression + 1) or buf is NULL,
+// the returned pointer will be NULL.
+//
+// In general use td_required_buf_size to figure out what size buffer to
+// pass.
+static td_histogram_t *td_init(double compression, size_t buf_size, char *buf) {
      td_histogram_t *h = (td_histogram_t *)(buf);
      if (!h) {
           return NULL;
@@ -79,7 +82,7 @@ td_histogram_t *td_init(double compression, size_t buf_size, char *buf) {
 }
 
 td_histogram_t *td_new(double compression) {
-     size_t memsize = td_buf_size(compression);
+     size_t memsize = td_required_buf_size(compression);
      return td_init(compression, memsize, (char *)(malloc(memsize)));
 }
 
@@ -105,14 +108,6 @@ double td_quantile_of(td_histogram_t *h, double val) {
      if (h->merged_nodes == 0) {
           return NAN;
      }
-     /* if (h->merged_nodes == 1) { */
-     /*      if (h->nodes[0].mean > val) { */
-     /*           return 1; */
-     /*      } else if (h->nodes[0].mean < val) { */
-     /*           return 0; */
-     /*      } */
-     /*      return 0.5; */
-     /* } */
      double k = 0;
      int i = 0;
      node_t *n = NULL;
@@ -143,7 +138,6 @@ double td_quantile_of(td_histogram_t *h, double val) {
      // and at (nl->count/2 + nr->count/2) we're at nr
      double m = (nr->mean - nl->mean) / (nl->count/2 + nr->count/2);
      double x = (val - nl->mean) / m;
-     printf("hi %f %f %f %f\n", m, x, k, h->merged_count);
      return (k + x) / h->merged_count;
 }
 

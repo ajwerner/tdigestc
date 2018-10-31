@@ -23,29 +23,26 @@
 
 typedef struct td_histogram td_histogram_t;
 
-// td_init will initialize a td_histogram_t inside buf which is buf_size bytes.
-// If buf_size is too small (smaller than compression + 1) or buf is NULL,
-// the returned pointer will be NULL.
-//
-// In general use td_required_buf_size to figure out what size buffer to
-// pass.
-td_histogram_t *td_init(double compression, size_t buf_size, char *buf);
-
-size_t td_buf_size(double compression);
-
 // td_new allocates a new histogram.
 // It is similar to init but assumes that it can use malloc.
 td_histogram_t *td_new(double compression);
 
-// td_free may only be called if the histogram was created with td_new.
+// td_free frees the memory associated with h.
 void td_free(td_histogram_t *h);
 
-void td_add(td_histogram_t *h, double mean, double count);
+// td_add adds val to h with the specified count.
+void td_add(td_histogram_t *h, double val, double count);
 
+// td_merge merges the data from from into into.
 void td_merge(td_histogram_t *into, td_histogram_t *from);
 
+// td_value_at queries h for the value at q.
+// If q is not in [0, 1], NAN will be returned.
 double td_value_at(td_histogram_t *h, double q);
 
+// td_value_at queries h for the quantile of val.
+// The returned value will be in [0, 1].
 double td_quantile_of(td_histogram_t *h, double val);
 
+// td_total_count returns the total count contained in h.
 double td_total_count(td_histogram_t *h);

@@ -13,13 +13,15 @@ The hope was to create an experience with the library where it was
 
 It's not clear that all of these goals have been totally acheived.
 
-## C
+## Library Implementaton
+
+### C
 
 C is the core implementation. The code comes in 1 .c file with 1 .h file. 
 You need to just put this into your project or take a compiled so from a bazel build.
 I haven't figured out a better C distribution story but if you have one, let me know.
 
-### Usage
+#### Usage
 
 The API is straight forward.
 
@@ -46,16 +48,16 @@ int main(void) {
 }
 ```
 
-## JS
+### JS
 
 The javascript integration works pretty well except for one wart.
 The memory used by the object will need to manually freed to release the underlying memory.
 
-### Installation
+#### Installation
 
 The package should be installable from (npm)[https://www.npmjs.com/package/tdigestc]
 
-### Usage
+#### Usage
 
 The API seeks to be very similar to the tdigest npm library that exists.
 
@@ -71,13 +73,13 @@ assert(td.valueAt(.5) == 1.5);
 assert(td.valueAt(1) == 2);
 td.destroy(); // this is the wart, an error will occur if td is used after
 ```
-## Python
+### Python
 
 Python is packaged using ctypes and a bundled shared library.
 This has obvious cross platform problems.
 The python rules are set up to build and publish to PyPI but that has not yet been all the way set up.
 
-### Usage
+#### Usage
 
 ```[python]
 from tdigestc import TDigest
@@ -89,7 +91,7 @@ assert f.value_at(.5) == 1.5
 assert f.value_at(1) == 2
 ```
 
-## Go
+### Go
 
 For go it's just that the C is symlinked into the directory and it uses cgo.
 
@@ -97,13 +99,13 @@ The wrapper is not a lot of code.
 The downside here is the overhead of calling in to cgo but it seems like the
 data structure from very preliminary testing is pretty fast.
 
-### Installation
+#### Installation
 
 ```
 $ go get github.com/ajwerner/tdigestc/go
 ```
 
-### Example
+#### Example
 
 ```[go]
 package main
@@ -120,12 +122,12 @@ func main() {
 }
 ```
 
-## Java
+### Java
 
 Java is hooked up through the JNI.
 The //java:TDigest target will compile a jar file which contains the TDigest class and self-loading library.
 
-### Usage
+#### Usage
 
 ```[java]
 import com.ajwerner.tdigestc.TDigest;
@@ -142,7 +144,24 @@ public class Example {
 }
 ```
 
-# TODO
+## Building
+
+Requires:
+
+* Bazel
+* Java
+* Python (I think 2.7 but am not 100% sure)
+* C Compiler
+
+The below command will build and test everything.
+If it works, you should feel pretty good.
+```
+ bazel test --nocache_test_results //java/... //python/...  //c/... //go/... --test_output=streamed && bazel test --config=wasm //js/... --nocache_test_results 
+```
+
+In theory bazel should download node, emscripten, and all that jazz.
+
+## TODO
 
 * Add doxygen for the C header
 * Fix stamping for distribution of NPM and PyPI packages
@@ -150,3 +169,6 @@ public class Example {
 * Figure out java packaging and distribution
 * Way more testing
 * Consider using binary search in queries
+* Do more work to make the builds reproducible
+* Cross compile fat binaries for Python/Java
+* Finish adding merge and quantileOf to bindings
