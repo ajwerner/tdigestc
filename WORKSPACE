@@ -39,7 +39,7 @@ pip_repositories()
 
 pip_import(
     name = "my_deps",
-    requirements = "//python:requirements.txt",
+    requirements = "//python:build_requirements.txt",
 )
 
 load("@my_deps//:requirements.bzl", "pip_install")
