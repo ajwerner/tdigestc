@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 #include <math.h>
 
@@ -99,13 +100,58 @@ double td_total_count(td_histogram_t *h) {
      return h->merged_count + h->unmerged_count;
 }
 
+double td_quantile_of(td_histogram_t *h, double val) {
+     merge(h);
+     if (h->merged_nodes == 0) {
+          return NAN;
+     }
+     /* if (h->merged_nodes == 1) { */
+     /*      if (h->nodes[0].mean > val) { */
+     /*           return 1; */
+     /*      } else if (h->nodes[0].mean < val) { */
+     /*           return 0; */
+     /*      } */
+     /*      return 0.5; */
+     /* } */
+     double k = 0;
+     int i = 0;
+     node_t *n = NULL;
+     for (i = 0; i < h->merged_nodes; i++) {
+          n = &h->nodes[i];
+          if (n->mean >= val) {
+               break;
+          }
+          k += n->count;
+     }
+     if (val == n->mean) {
+          // technically this needs to find all of the nodes which contain this value and sum their weight
+          double count_at_value = n->count;
+          for (i += 1; i < h->merged_nodes && h->nodes[i].mean == n->mean; i++) {
+               count_at_value += h->nodes[i].count;
+          }
+          return (k + (count_at_value/2)) / h->merged_count;
+     } else if (val > n->mean) { // past the largest
+          return 1;
+     } else if (i == 0) {
+          return 0;
+     }
+     // we want to figure out where along the line from the prev node to this node, the value falls
+     node_t *nr = n;
+     node_t *nl = n-1;
+     k -= (nl->count/2);
+     // we say that at zero we're at nl->mean
+     // and at (nl->count/2 + nr->count/2) we're at nr
+     double m = (nr->mean - nl->mean) / (nl->count/2 + nr->count/2);
+     double x = (val - nl->mean) / m;
+     printf("hi %f %f %f %f\n", m, x, k, h->merged_count);
+     return (k + x) / h->merged_count;
+}
+
+
 double td_value_at(td_histogram_t *h, double q) {
      merge(h);
      if (q < 0 || q > 1 || h->merged_nodes == 0) {
           return NAN;
-     }
-     if (h->merged_nodes == 1) {
-          return h->nodes[0].mean;
      }
      // if left of the first node, use the first node
      // if right of the last node, use the last node, use it
@@ -118,7 +164,7 @@ double td_value_at(td_histogram_t *h, double q) {
           if (k + n->count > goal) {
                break;
           }
-          k += h->nodes[i].count;
+          k += n->count;
      }
      double delta_k = goal - k - (n->count/2);
      if (is_very_small(delta_k)) {
@@ -143,7 +189,7 @@ double td_value_at(td_histogram_t *h, double q) {
      double x = goal - k;
      // we have two points (0, nl->mean), (nr->count, nr->mean)
      // and we want x
-     double m = (nr->mean - nl->mean) / (nr->count);
+     double m = (nr->mean - nl->mean) / (nl->count/2 + nr->count/2);
      return m * x + nl->mean;
 }
 

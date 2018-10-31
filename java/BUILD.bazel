@@ -1,0 +1,50 @@
+load(":extract_header.bzl", "extract_native_header_jar")
+
+java_library(
+    name = "TDigest-java",
+    srcs = [
+        "src/main/java/com/ajwerner/tdigestc/TDigest.java",
+    ],
+)
+
+extract_native_header_jar(
+    name = "TDigest-header",
+    outs = ["com_ajwerner_tdigestc_TDigest.h"],
+    lib = ":TDigest-java",
+)
+
+cc_binary(
+    name = "TDigest.so",
+    srcs = [
+        "src/main/c/TDigest.c",
+        "com_ajwerner_tdigestc_TDigest.h",
+    ],
+    deps = [
+        "//c:tdigest",
+        "//:jni_headers",
+    ],
+    includes = [ "." ],
+    linkshared = 1,
+)
+
+java_library(
+    name = "TDigest",
+    data = [ ":TDigest.so" ],
+    srcs = [
+        "src/main/java/com/ajwerner/tdigestc/TDigest.java",
+    ],
+    resources = [
+        ":TDigest.so",
+    ],
+    exports = [
+        ":TDigest.so",
+    ],
+)
+
+java_test(
+    name = "TDigestTest",
+    srcs = glob(["src/test/java/**/*.java"]),
+    deps = [
+        ":TDigest",
+    ],
+)

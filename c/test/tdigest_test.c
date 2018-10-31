@@ -72,11 +72,24 @@ static char *test_two_interp() {
      return NULL;
 }
 
+static char *test_quantile_of() {
+     td_histogram_t *t = td_new(1000);
+     td_add(t, 1, 1);
+     td_add(t, 10, 1);
+     mu_assert("test_quantile_of: .99", td_quantile_of(t, .99) == 0);
+     mu_assert("test_quantile_of: 1", td_quantile_of(t, 1) == .25);
+     mu_assert("test_quantile_of: 5.5", td_quantile_of(t, 5.5) == .5);
+
+     td_free(t);
+     return NULL;
+}
+
 static char *all_tests() {
      mu_run_test(test_basic);
      mu_run_test(test_uniform_rand);
      mu_run_test(test_nans);
      mu_run_test(test_two_interp);
+     mu_run_test(test_quantile_of);
      return NULL;
 }
 
