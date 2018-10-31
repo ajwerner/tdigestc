@@ -13,7 +13,7 @@ The hope was to create an experience with the library where it was
 
 It's not clear that all of these goals have been totally acheived.
 
-## Library Implementaton
+## Library Implementations
 
 ### C
 
