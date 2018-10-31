@@ -18,8 +18,6 @@ I haven't figured out a better C distribution story but if you have one, let me 
 
 The API is straight forward.
 
-TODO: add doxygen to the C header
-
 ```
 #include <assert.h>
 #include "tdigest.h"
@@ -52,20 +50,21 @@ The API seeks to be very similar to the tdigest npm library that exists.
 
 For the testing I run a test to compare the output from that open source library and this one.
 
+```[js]
+const TDigest = require('./tdigest.js').TDigest;
+var td = new TDigest(100);
+td.add(1);
+td.add(2);
+assert(td.valueAt(0) == 1);
+assert(td.valueAt(.5) == 1.5);
+assert(td.valueAt(1) == 2);
+td.destroy(); // this is the wart, an error will occur if td is used after
+```
 ## Python
 
-I don't have a wonderful story for what to do with python.
-
-Python has two different stories for C integration.
-
-One works for pypy and one doesn't. 
-
-The one that doesn't is a liitle bit more annoying to package.
-Ideally I'd have a way to construct a fat binary "wheel?"
-It's not clear how to cross compile in bazel inside the same execution.
-It'd be great to have a PyPI package that one could pip install that just works.
-I'm not sure how this is done in a cross platform way.
-Bears further investigation.
+Python is packaged using ctypes and a bundled shared library.
+This has obvious cross platform problems.
+The python rules are set up to build and publish to PyPI but that has not yet been all the way set up.
 
 ## Go
 
@@ -92,12 +91,33 @@ func main() {
      td := tdigestc.New(100);
      td.Add(1)
      td.Add(2)
-
 }
 ```
 
 ## Java
 
-It's just JNI bindings that I need to write.
-I could consider learning JNA or maybe they've released something new.
+Java is hooked up through the JNI.
+The //java:TDigest target will compile a jar file which contains the TDigest class and self-loading library.
 
+```[java]
+import com.ajwerner.tdigestc.TDigest;
+
+public class Example {
+     public static void main(String[] args) {
+          TDigest td = new TDigest(100);
+          td.add(1);
+          td.add(2);
+          assert td.valueAt(0) == 1;
+          assert td.valueAt(.5) == 1.5;
+          assert td.valueAt(1) == 2;               
+     }
+}
+```
+
+# TODO
+
+* Add doxygen for the C header
+* Fix stamping for distribution of NPM and PyPI packages
+* Improve python packaging and distribution
+* Figure out java packaging and distribution
+* Way more testing

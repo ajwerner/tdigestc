@@ -1,7 +1,5 @@
-
 def _impl(ctx):
     # https://github.com/bazelbuild/rules_scala/pull/286/files
-    print(ctx.outputs.outs[0].dirname)
     ctx.actions.run(
         inputs = [ctx.attr.lib.java.outputs.native_headers],
         tools = [ctx.executable._zipper],
@@ -16,7 +14,12 @@ extract_native_header_jar = rule(
         "lib": attr.label(mandatory=True, single_file=True),
         "outs": attr.output_list(),
         # https://github.com/bazelbuild/bazel/issues/2414
-        "_zipper": attr.label(executable=True, cfg="host", default=Label("@bazel_tools//tools/zip:zipper"), allow_files=True)
+        "_zipper": attr.label(
+            executable=True, 
+            cfg="host", 
+            default=Label("@bazel_tools//tools/zip:zipper"), 
+            allow_files=True,
+        )
     },
     output_to_genfiles = True,
 )

@@ -17,10 +17,13 @@
       }
       add(v, count) {
         exists(this);
+        if (count === undefined) {
+          count = 1;
+        }
         addValue(this.data, v, count);
       }
       push(v) {
-        this.add(v, 1);
+        this.add(v);
       }
       valueAt(q) {
         exists(this);

@@ -1,7 +1,6 @@
 VERSION="0.0.7"
 
 def _write_version(ctx):
-    print(VERSION)
     ctx.actions.expand_template(template = ctx.file.template,
                                 output = ctx.outputs.out,
                                 substitutions = {"{VERSION}": VERSION})
