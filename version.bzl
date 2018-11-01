@@ -1,4 +1,4 @@
-VERSION="0.0.7"
+VERSION="0.0.8"
 
 def _write_version(ctx):
     ctx.actions.expand_template(template = ctx.file.template,
