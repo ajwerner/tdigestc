@@ -37,6 +37,10 @@ func (t *Histogram) ValueAt(q float64) float64 {
 	return float64(C.td_value_at(t.p, C.double(q)))
 }
 
-// func (t *Histogram) QuantileOf(val float64) float64 {
-// 	return float64(C.td_quantile_of(t.p, C.double(val)))
-// }
+func (t *Histogram) Merge(other *Histogram) {
+	C.td_merge(t.p, other.p)
+}
+
+func (t *Histogram) QuantileOf(val float64) float64 {
+	return float64(C.td_quantile_of(t.p, C.double(val)))
+}
