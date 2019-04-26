@@ -1,11 +1,12 @@
 package tdigest
 
 import (
-	"sort"
+	"fmt"
 	"math"
 	"math/rand"
-	"testing"
+	"sort"
 	"strconv"
+	"testing"
 )
 
 func TestTDigest(t *testing.T) {
@@ -63,19 +64,22 @@ func checkAccuracy(t *testing.T, data []float64, h *Histogram) {
 	sort.Float64s(data)
 	N := float64(len(data))
 	// check accurracy
-	for _, q := range  quantilesToCheck {
-		v := data[int((N-1) * q)]
+	for _, q := range quantilesToCheck {
+		v := data[int((N-1)*q)]
 		got := h.ValueAt(q)
-		avg := math.Abs((v + got) /2)
-		errRatio := math.Abs(v-got)/avg
+		avg := math.Abs((v + got) / 2)
+		errRatio := math.Abs(v-got) / avg
 		limit := 0.4
 		if q < .1 || q > .9 {
 			limit = .1
 		}
+		if true {
+			fmt.Printf("%v %v %v %v\n", q, errRatio, got, v)
+		}
 		if errRatio > limit && avg > .1 {
 			t.Errorf("Got error %v for q %v (%v vs %v)",
 				errRatio, q, v, got)
-		} 
+		}
 	}
 }
 
@@ -85,11 +89,27 @@ func addData(data []float64, hists ...*Histogram) {
 	}
 }
 
+func TestDecay(t *testing.T) {
+	td := New(128)
+	td.Record(1)
+	td.Record(2)
+	td.Decay(.99)
+	td.Decay(.99)
+	td.Decay(.99)
+	td.Decay(.99)
+	td.Record(1.5)
+	td.Record(1.5)
+	td.Record(1.7)
+	td.Record(1.8)
+	t.Logf("%v", td.ValueAt(.4))
+	t.Logf("%v", td.ValueAt(.2))
+}
+
 func TestAccuracy(t *testing.T) {
 	const N = 100000
 	for dist, f := range map[string]accuracyTest{
-		"uniform": rand.Float64,
-		"normal": rand.NormFloat64,
+		"uniform":     rand.Float64,
+		"normal":      rand.NormFloat64,
 		"exponential": rand.ExpFloat64,
 		// "discrete": func() float64 {
 		// 	g := rand.Float64()
@@ -106,24 +126,26 @@ func TestAccuracy(t *testing.T) {
 		// },
 	} {
 		data := makeData(N, f)
-		for order, shuffle := range map[string]func([]float64) {
+		for order, shuffle := range map[string]func([]float64){
 			"reverse": sortReverse,
-			"sorted": sort.Float64s,
+			"sorted":  sort.Float64s,
 			"shuffled": func(data []float64) {
 				rand.Shuffle(len(data), func(i, j int) {
 					data[i], data[j] = data[j], data[i]
 				})
 			},
 		} {
-			t.Run(dist + " " + order + " single", func(t *testing.T) {
+			h := New(100)
+			t.Run(dist+" "+order+" single", func(t *testing.T) {
 				shuffle(data)
-				h := New(100)
+				h.Reset()
 				addData(data, h)
 				checkAccuracy(t, data, h)
 			})
-			t.Run(dist + " " + order + " multi", func(t *testing.T) {
+			t.Run(dist+" "+order+" multi", func(t *testing.T) {
 				shuffle(data)
-				h1 := New(100)
+				h.Reset()
+				h1 := h
 				h2 := New(100)
 				h3 := New(100)
 				h4 := New(100)
@@ -134,9 +156,9 @@ func TestAccuracy(t *testing.T) {
 				checkAccuracy(t, data, h1)
 			})
 		}
-		
+
 	}
-	
+
 }
 
 func benchmarkAddSize(size int) func(*testing.B) {

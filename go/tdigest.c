@@ -99,6 +99,23 @@ void td_merge(td_histogram_t *into, td_histogram_t *from) {
      }
 }
 
+void td_reset(td_histogram_t *h) {
+     bzero((void *)(&h->nodes[0]), sizeof(node_t)*h->cap);
+     h->merged_nodes = 0;
+     h->merged_count = 0;
+     h->unmerged_nodes = 0;
+     h->unmerged_count = 0;
+}
+
+double td_decay(td_histogram_t *h, double factor) {
+     merge(h);
+     h->unmerged_count *= factor;
+     h->merged_count *= factor;
+     for (int i = 0; i < h->merged_nodes; i++) {
+          h->nodes[i].count *= factor;
+     }
+}
+
 double td_total_count(td_histogram_t *h) {
      return h->merged_count + h->unmerged_count;
 }

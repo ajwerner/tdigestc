@@ -36,6 +36,9 @@ void td_add(td_histogram_t *h, double val, double count);
 // td_merge merges the data from from into into.
 void td_merge(td_histogram_t *into, td_histogram_t *from);
 
+// td_reset resets a histogram.
+void td_reset(td_histogram_t *h);
+
 // td_value_at queries h for the value at q.
 // If q is not in [0, 1], NAN will be returned.
 double td_value_at(td_histogram_t *h, double q);
@@ -46,3 +49,6 @@ double td_quantile_of(td_histogram_t *h, double val);
 
 // td_total_count returns the total count contained in h.
 double td_total_count(td_histogram_t *h);
+
+// td_decay multiplies all countes by factor.
+double td_decay(td_histogram_t *h, double factor);

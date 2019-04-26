@@ -44,3 +44,11 @@ func (t *Histogram) Merge(other *Histogram) {
 func (t *Histogram) QuantileOf(val float64) float64 {
 	return float64(C.td_quantile_of(t.p, C.double(val)))
 }
+
+func (t *Histogram) Reset() {
+	C.td_reset(t.p)
+}
+
+func (t *Histogram) Decay(factor float64) {
+	C.td_decay(t.p, C.double(factor))
+}
