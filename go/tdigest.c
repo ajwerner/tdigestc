@@ -191,11 +191,11 @@ double td_value_at(td_histogram_t *h, double q) {
      if (right) {
           nl = n;
           nr = &h->nodes[i+1];
-          k += (n->count/2);
+          k += (nr->count/2);
      } else {
           nl = &h->nodes[i-1];
           nr = n;
-          k -= (n->count/2);
+          k -= (nl->count/2);
      }
      double x = goal - k;
      // we have two points (0, nl->mean), (nr->count, nr->mean)
