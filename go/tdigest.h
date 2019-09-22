@@ -47,8 +47,15 @@ double td_value_at(td_histogram_t *h, double q);
 // The returned value will be in [0, 1].
 double td_quantile_of(td_histogram_t *h, double val);
 
+// td_trimmed_mean returns the mean of data from the lo quantile to the
+// hi quantile.
+double td_trimmed_mean(td_histogram_t *h, double lo, double hi);
+
 // td_total_count returns the total count contained in h.
 double td_total_count(td_histogram_t *h);
 
+// td_total_sum returns the sum of all the data added to h.
+double td_total_sum(td_histogram_t *h);
+
 // td_decay multiplies all countes by factor.
-double td_decay(td_histogram_t *h, double factor);
+void td_decay(td_histogram_t *h, double factor);

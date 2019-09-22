@@ -107,7 +107,7 @@ void td_reset(td_histogram_t *h) {
      h->unmerged_count = 0;
 }
 
-double td_decay(td_histogram_t *h, double factor) {
+void td_decay(td_histogram_t *h, double factor) {
      merge(h);
      h->unmerged_count *= factor;
      h->merged_count *= factor;
@@ -118,6 +118,17 @@ double td_decay(td_histogram_t *h, double factor) {
 
 double td_total_count(td_histogram_t *h) {
      return h->merged_count + h->unmerged_count;
+}
+
+double td_total_sum(td_histogram_t *h) {
+     node_t *n = NULL;     
+     double sum = 0;
+     int total_nodes = h->merged_nodes + h->unmerged_nodes;
+     for (int i = 0; i < total_nodes; i++) {
+          n = &h->nodes[i];
+          sum += n->mean * n->count;
+     }
+     return sum;
 }
 
 double td_quantile_of(td_histogram_t *h, double val) {
@@ -204,6 +215,39 @@ double td_value_at(td_histogram_t *h, double q) {
      return m * x + nl->mean;
 }
 
+double td_trimmed_mean(td_histogram_t *h, double lo, double hi) {
+     if (should_merge(h)) {
+          merge(h);
+     }
+     double total_count = h->merged_count;
+     double left_tail_count = lo * total_count;
+     double right_tail_count = hi * total_count;
+     double count_seen = 0;
+     double weighted_mean = 0;
+     for (int i = 0; i < h->merged_nodes; i++) {
+          if (i > 0) {
+               count_seen += h->nodes[i-1].count;
+          }
+          node_t *n = &h->nodes[i];
+          if (n->count < left_tail_count) {
+               continue;
+          }
+          if (count_seen > right_tail_count) {
+               break;
+          }
+          double left = count_seen;
+          if (left < left_tail_count) {
+               left = left_tail_count;
+          }
+          double right = count_seen + n->count;
+          if (right > right_tail_count) {
+               right = right_tail_count;
+          }
+          weighted_mean += n->mean * (right - left);          
+     }
+     double included_count = total_count * (hi - lo);
+     return weighted_mean / included_count;
+}
 
 void td_add(td_histogram_t *h, double mean, double count) {
      if (should_merge(h)) {

@@ -6,7 +6,10 @@ package tdigest
 // #cgo LDFLAGS: -lm
 // #include "tdigest.h"
 import "C"
-import "runtime"
+import (
+	"fmt"
+	"runtime"
+)
 
 type Histogram struct {
 	p *C.td_histogram_t
@@ -43,6 +46,31 @@ func (t *Histogram) Merge(other *Histogram) {
 
 func (t *Histogram) QuantileOf(val float64) float64 {
 	return float64(C.td_quantile_of(t.p, C.double(val)))
+}
+
+func (t *Histogram) InnerMean(innerQ float64) float64 {
+	if innerQ > 1 || innerQ < 0 {
+		panic(fmt.Errorf("InnerMean: innerQ must be between 0 and 1, got %v", innerQ))
+	}
+	outer := 1 - innerQ
+	lo := outer / 2
+	hi := 1 - lo
+	return float64(C.td_trimmed_mean(t.p, C.double(lo), C.double(hi)))
+}
+
+func (t *Histogram) TrimmedMean(lo, hi float64) float64 {
+	if lo < 0 || lo > 1 || hi < 0 || hi > 1 || lo > hi {
+		panic(fmt.Errorf("TrimmedMean: illegal arguments, lo and hi must be in [0,1] and lo < hi, got %v and %v", lo, hi))
+	}
+	return float64(C.td_trimmed_mean(t.p, C.double(lo), C.double(hi)))
+}
+
+func (t *Histogram) TotalCount() float64 {
+	return float64(C.td_total_count(t.p))
+}
+
+func (t *Histogram) TotalSum() float64 {
+	return float64(C.td_total_sum(t.p))
 }
 
 func (t *Histogram) Reset() {
