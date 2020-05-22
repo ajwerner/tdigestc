@@ -109,7 +109,6 @@ void td_reset(td_histogram_t *h) {
 
 void td_decay(td_histogram_t *h, double factor) {
      merge(h);
-     h->unmerged_count *= factor;
      h->merged_count *= factor;
      for (int i = 0; i < h->merged_nodes; i++) {
           h->nodes[i].count *= factor;
