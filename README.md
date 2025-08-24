@@ -17,7 +17,8 @@ It's not clear that all of these goals have been totally acheived.
 
 ### C
 
-C is the core implementation. The code comes in 1 .c file with 1 .h file. 
+C is the core implementation. The code comes in 1 .c file with 1 .h file,
+located in the go subdirectory and symlinked under the c subdirectory.
 You need to just put this into your project or take a compiled so from a bazel build.
 I haven't figured out a better C distribution story but if you have one, let me know.
 
@@ -31,14 +32,15 @@ The API is straight forward.
 
 int main(void) {
     td_histogram_t *h = td_new(100);
-    td_add(h, 1);
-    td_add(h, 2);
+    const double count = 1;
+    td_add(h, 1, count);
+    td_add(h, 2, count);
     assert(td_value_at(h, 0) == 1);
     assert(td_value_at(h, .5) == 1.5);
     assert(td_value_at(h, 1) == 2);
     td_histogram_t *h2 = td_new(100);
-    td_add(h2, 0);
-    td_add(h2, 3);
+    td_add(h2, 0, count);
+    td_add(h2, 3, count);
     td_merge(h, h2);
     assert(td_value_at(h, 0) == 0);
     assert(td_value_at(h, .5) == 1.5);
@@ -93,7 +95,8 @@ assert f.value_at(1) == 2
 
 ### Go
 
-For go it's just that the C is symlinked into the directory and it uses cgo.
+For go it's just that the package calls into the C code and thus
+is compiled with cgo.
 
 The wrapper is not a lot of code.
 The downside here is the overhead of calling in to cgo but it seems like the
