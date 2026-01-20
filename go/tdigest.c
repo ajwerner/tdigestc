@@ -229,7 +229,7 @@ double td_trimmed_mean(td_histogram_t *h, double lo, double hi) {
                count_seen += h->nodes[i-1].count;
           }
           node_t *n = &h->nodes[i];
-          if (n->count < left_tail_count) {
+          if (count_seen + n->count < left_tail_count) {
                continue;
           }
           if (count_seen > right_tail_count) {
